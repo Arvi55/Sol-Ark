@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HELIOS // Solar Storm Prediction</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+    <link rel="stylesheet" href="https://unpkg.com/lucide@latest/dist/umd/lucide.css">
+</head>
+<body>
+    <!-- Star Background -->
+    <div class="stars-container" id="starfield">
+        <div class="nebula"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <!-- Logo -->
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i data-lucide="sun" class="logo-sun"></i>
+                </div>
+                <span class="logo-text">HELIOS <span class="logo-subtext">// SYSTEM</span></span>
+            </div>
+
+            <!-- Links -->
+            <div class="nav-links">
+                <a href="#" class="nav-link"><span class="link-number">[01]</span> OBSERVATORY</a>
+                <a href="#" class="nav-link"><span class="link-number">[02]</span> FORECAST</a>
+                <a href="#" class="nav-link"><span class="link-number">[03]</span> IMPACT</a>
+            </div>
+
+            <!-- Status -->
+            <div class="nav-status">
+                <div class="status-indicator">
+                    <span class="status-ping"></span>
+                    <span class="status-dot"></span>
+                    <span class="status-text">SYSTEM ONLINE</span>
+                </div>
+                <button class="login-button">
+                    CONSOLE LOGIN
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <!-- Sun/Flare Visual Background -->
+        <div class="sun-flare-large"></div>
+        <div class="sun-flare-small"></div>
+
+        <div class="hero-content">
+            <!-- Version Badge -->
+            <div class="version-badge">
+                <div class="badge-dot"></div>
+                <span class="badge-text">v4.0.2 Live Feed Active</span>
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="main-title">
+                SOLAR STORM
+            </h1>
+            <h1 class="main-title gradient-title">
+                PREDICTION
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="hero-subtitle">
+                The enterprise infrastructure layer for stellar event analysis. Zero latency detection of Coronal Mass Ejections. Protect orbital assets with deterministic compute.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="hero-buttons">
+                <button class="cta-primary">
+                    START INSTANCE
+                    <i data-lucide="arrow-right" class="cta-icon"></i>
+                </button>
+                <button class="cta-secondary">
+                    READ WHITEPAPER
+                </button>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <span class="indicator-text">SCROLL TO MONITOR</span>
+            <div class="indicator-line"></div>
+        </div>
+    </section>
+
+    <!-- Live Forecast Dashboard -->
+    <section class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <div>
+                    <h2 class="dashboard-title">Planetary Defense Grid</h2>
+                    <p class="dashboard-subtitle">Real-time magnetosphere telemetry.</p>
+                </div>
+                <div class="dashboard-timers">
+                    <span class="timer">T-MINUS: 00:00:00</span>
+                    <span class="timer">UTC 14:20:44</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Main Visualizer -->
+                <div class="dashboard-main">
+                    <div class="visualizer-bg"></div>
+                    
+                    <!-- UI Overlay -->
+                    <div class="visualizer-overlay">
+                        <div class="visualizer-metric">
+                            <span class="metric-label">Field Intensity</span>
+                            <span class="metric-value">45.2 nT</span>
+                        </div>
+                        <div class="visualizer-status">
+                            <span class="status-indicator-dot"></span>
+                            <span class="status-text">STABLE</span>
+                        </div>
+                    </div>
+
+                    <!-- Abstract Earth/Shield Visualization -->
+                    <div class="earth-visualization">
+                        <div class="outer-ring">
+                            <div class="inner-ring">
+                                <div class="ring-dot"></div>
+                            </div>
+                            <div class="earth-globe">
+                                <div class="earth-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Solar Wind Lines -->
+                    <div class="solar-wind-line top-line"></div>
+                    <div class="solar-wind-line bottom-line"></div>
+                </div>
+
+                <!-- Metrics Column -->
+                <div class="dashboard-metrics">
+                    <!-- Metric 1 -->
+                    <div class="metric-card green-border">
+                        <div class="metric-header">
+                            <h3 class="metric-title">Kp Index</h3>
+                            <i data-lucide="activity" class="metric-icon"></i>
+                        </div>
+                        <div class="metric-value-large">2.0</div>
+                        <div class="metric-description">Geomagnetic activity low. No disruption expected.</div>
+                        <div class="metric-bar">
+                            <div class="bar-fill green-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 2 -->
+                    <div class="metric-card orange-border">
+                        <div class="metric-header">
+                            <h3 class="metric-title">Proton Flux</h3>
+                            <i data-lucide="zap" class="metric-icon"></i>
+                        </div>
+                        <div class="metric-value-large orange-text">10^1</div>
+                        <div class="metric-description">Elevated particle density detected in Sector 7.</div>
+                        <div class="metric-bar">
+                            <div class="bar-fill orange-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 3 -->
+                    <div class="metric-card gray-border">
+                        <div class="metric-header">
+                            <h3 class="metric-title">Solar Wind</h3>
+                            <i data-lucide="wind" class="metric-icon"></i>
+                        </div>
+                        <div class="metric-value-large">345 <span class="unit">km/s</span></div>
+                        <div class="metric-description">Velocity nominal. Ambient background levels.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Satellite Impact Section -->
+    <section class="satellite-section">
+        <div class="container grid-container">
+            <!-- Graphic -->
+            <div class="satellite-graphic">
+                <!-- Orbital Rings -->
+                <div class="orbital-ring large-ring"></div>
+                <div class="orbital-ring small-ring"></div>
+                
+                <!-- Central Body -->
+                <div class="central-body">
+                    <i data-lucide="globe" class="globe-icon"></i>
+                </div>
+
+                <!-- Satellites -->
+                <div class="satellite safe-1"></div>
+                <div class="satellite safe-2"></div>
+                
+                <!-- Impacted Satellite -->
+                <div class="satellite impacted">
+                    <span class="satellite-alert">ALERT</span>
+                </div>
+
+                <!-- Connection Lines -->
+                <svg class="connection-lines">
+                    <line x1="50%" y1="50%" x2="80%" y2="30%" class="alert-line"></line>
+                    <line x1="50%" y1="50%" x2="50%" y2="15%" class="safe-line"></line>
+                </svg>
+            </div>
+
+            <!-- Content -->
+            <div class="satellite-content">
+                <div class="alert-badge">
+                    <i data-lucide="alert-triangle" class="alert-icon"></i>
+                    <span class="alert-text">Infrastructure Impact Analysis</span>
+                </div>
+                
+                <h2 class="satellite-title">
+                    Protecting orbital assets from <br>
+                    <span class="highlight">geomagnetic disruption.</span>
+                </h2>
+                
+                <p class="satellite-description">
+                    Solar flares can expand Earth's atmosphere, increasing drag on Low Earth Orbit satellites. Our deterministic models predict trajectory deviations up to 72 hours in advance.
+                </p>
+
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i data-lucide="check" class="check-icon"></i>
+                        </div>
+                        <div>
+                            <h4 class="feature-title">Drag Coefficient Analysis</h4>
+                            <p class="feature-description">Real-time atmospheric density calculations.</p>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i data-lucide="check" class="check-icon"></i>
+                        </div>
+                        <div>
+                            <h4 class="feature-title">SEU Prediction</h4>
+                            <p class="feature-description">Single Event Upset probability mapping for electronics.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features / Importance -->
+    <section class="features-section">
+        <div class="container">
+            <div class="features-grid">
+                <!-- Card 1 -->
+                <div class="feature-card">
+                    <div class="card-icon">
+                        <i data-lucide="shield" class="card-icon-svg"></i>
+                    </div>
+                    <h3 class="card-title">Satellite Safety</h3>
+                    <p class="card-description">
+                        Automated orbital adjustments to prevent collision risks due to atmospheric expansion during Class-X flares.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="feature-card">
+                    <div class="card-icon">
+                        <i data-lucide="signal" class="card-icon-svg"></i>
+                    </div>
+                    <h3 class="card-title">Comms Reliability</h3>
+                    <p class="card-description">
+                        HF radio blackout warnings for aviation and maritime sectors with sub-second latency distribution.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="feature-card">
+                    <div class="card-icon">
+                        <i data-lucide="server" class="card-icon-svg"></i>
+                    </div>
+                    <h3 class="card-title">Grid Protection</h3>
+                    <p class="card-description">
+                        GIC (Geomagnetically Induced Current) monitoring to prevent transformer saturation and grid collapse.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-container">
+            <div class="footer-logo">
+                <div class="footer-icon">
+                    <i data-lucide="sun" class="footer-sun"></i>
+                </div>
+                <span class="footer-text">HELIOS</span>
+            </div>
+            
+            <div class="footer-copyright">
+                © 2024 HELIOS SYSTEMS INC. // ALL RIGHTS RESERVED
+            </div>
+
+            <div class="footer-social">
+                <a href="#" class="social-link"><i data-lucide="github" class="social-icon"></i></a>
+                <a href="#" class="social-link"><i data-lucide="twitter" class="social-icon"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="script.js"></script>
+</body>
+</html>
