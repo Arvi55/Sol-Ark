@@ -135,13 +135,21 @@ body {
 }
 
 .logo-icon {
-    width: 2rem;
-    height: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    /* ADDED: Smooths the animation so it doesn't snap instantly */
+    transition: transform 0.6s ease-in-out; 
+}
+
+/* ADDED: Triggers the flip when the cursor hovers over the element */
+.logo-icon:hover {
+    transform: rotateY(180deg); 
 }
 
 .logo-sun {
@@ -153,6 +161,13 @@ body {
 .logo-text {
     font-size: 1.125rem;
     font-weight: 600;
+    font-family: "Sixtyfour", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+    "BLED" 0,
+    "SCAN" 0;
     letter-spacing: -0.025em;
 }
 
@@ -344,6 +359,9 @@ body {
 
 .main-title {
     font-size: 3rem;
+    font-family: "Michroma", sans-serif;
+    font-weight: 400;
+    font-style: normal;
     font-weight: 600;
     letter-spacing: -0.05em;
     line-height: 1;
@@ -501,6 +519,9 @@ body {
 .dashboard-title {
     font-size: 1.875rem;
     font-weight: 500;
+    font-family: "Audiowide", sans-serif;
+    font-weight: 500;
+    font-style: normal;
     letter-spacing: -0.025em;
     margin-bottom: 0.5rem;
 }
@@ -1156,4 +1177,107 @@ body {
 .social-icon {
     width: 1rem;
     height: 1rem;
+}
+/* --- PASTE AT THE BOTTOM OF STYLES.CSS --- */
+
+/* 1. INSANE BUTTON HOVER (Scanline Swipe) */
+.cta-primary {
+    position: relative;
+    overflow: hidden; /* Keeps the shine inside the button */
+    z-index: 1;
+}
+
+.cta-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: 0.5s;
+    z-index: -1;
+}
+
+.cta-primary:hover::after {
+    left: 100%;
+    transition: 0.4s ease-in-out;
+}
+
+.cta-primary:hover {
+    box-shadow: 0 0 15px #ea580c, 0 0 30px rgba(234, 88, 12, 0.4);
+    text-shadow: 0 0 8px rgba(255,255,255,0.8);
+    transform: translateY(-2px); /* Slight lift */
+}
+
+/* 2. GLOWING CARDS (No Layout Shift) */
+.feature-card {
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: rgba(249, 115, 22, 0.5);
+    box-shadow: 0 10px 40px -10px rgba(234, 88, 12, 0.3);
+    background: rgba(255, 255, 255, 0.05); /* Slightly brighter */
+}
+
+/* 3. NEON TEXT GLITCH (Visual Only) */
+@keyframes glitch-text {
+    0% { text-shadow: 2px 0 #ef4444, -2px 0 #3b82f6; }
+    25% { text-shadow: -2px 0 #ef4444, 2px 0 #3b82f6; }
+    50% { text-shadow: 2px 0 #22c55e, -2px 0 #ef4444; }
+    75% { text-shadow: -2px 0 #ef4444, 2px 0 #22c55e; }
+    100% { text-shadow: 2px 0 #ef4444, -2px 0 #3b82f6; }
+}
+
+.main-title:hover {
+    animation: glitch-text 0.3s infinite;
+    cursor: default;
+}
+
+/* 4. NAV LINKS (Underline Swipe) */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: #f97316;
+    transition: width 0.3s ease-out;
+    box-shadow: 0 0 8px #f97316;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* 5. METRIC BARS (Pulsing Animation) */
+@keyframes bar-pulse {
+    0% { opacity: 0.6; box-shadow: 0 0 0 rgba(0,0,0,0); }
+    50% { opacity: 1; box-shadow: 0 0 10px currentColor; }
+    100% { opacity: 0.6; box-shadow: 0 0 0 rgba(0,0,0,0); }
+}
+
+.metric-card:hover .bar-fill {
+    animation: bar-pulse 1.5s infinite;
+}
+
+/* 6. LOGO FLIP (Enhanced) */
+.logo-icon {
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.logo-icon:hover {
+    transform: rotateY(180deg);
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
 }
