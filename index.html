@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
     <link rel="stylesheet" href="https://unpkg.com/lucide@latest/dist/umd/lucide.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Dosis:wght@200..800&family=Michroma&family=Sixtyfour&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Star Background -->
@@ -20,7 +23,7 @@
             <!-- Logo -->
             <div class="logo-container">
                 <div class="logo-icon">
-                    <img src="assets/Logo.png" class="logo-sun"></img>
+                    <img src="Logo.png" class="logo-sun"></img>
                 </div>
                 <span class="logo-text">Sol-Ark <span class="logo-subtext">// SYSTEM</span></span>
             </div>
@@ -51,31 +54,30 @@
         <!-- Sun/Flare Visual Background -->
         <div class="sun-flare-large"></div>
         <div class="sun-flare-small"></div>
-
+        <div id="ring-canvas-container" style="position: absolute; inset: 0; z-index: 0; pointer-events: none;"></div>
         <div class="hero-content">
-            <!-- Version Badge -->
-            <div class="version-badge">
-                <div class="badge-dot"></div>
-                <span class="badge-text">v4.0.2 Live Feed Active</span>
-            </div>
+    <div class="version-badge">
+        <div class="badge-dot"></div>
+        <span class="badge-text">System Active // Sol-Ark v4.0.2</span>
+    </div>
 
-            <!-- Main Title -->
-            <h1 class="main-title">
-                SOLAR STORM
-            </h1>
-            <h1 class="main-title gradient-title">
-                PREDICTION
-            </h1>
+    <h1 class="main-title">
+        MISSION     
+    </h1>
+    <h1 class="main-title gradient-title">
+        SOL-ARK
+    </h1>
 
-            <!-- Subtitle -->
-            <p class="hero-subtitle">
-                The enterprise infrastructure layer for stellar event analysis. Zero latency detection of Coronal Mass Ejections. Protect orbital assets with deterministic compute.
-            </p>
+    <p class="hero-subtitle">
+        The ultimate defense layer against stellar instability. Protecting Earth's orbital infrastructure through predictive magnetosphere analysis.
+    </p>
+    
+    </div>
 
             <!-- CTA Buttons -->
             <div class="hero-buttons">
                 <button class="cta-primary">
-                    START INSTANCE
+                    START SHIELDING
                     <i data-lucide="arrow-right" class="cta-icon"></i>
                 </button>
                 <button class="cta-secondary">
@@ -90,7 +92,7 @@
             <div class="indicator-line"></div>
         </div>
     </section>
-
+    
     <!-- Live Forecast Dashboard -->
     <section class="dashboard">
         <div class="container">
@@ -297,23 +299,26 @@
         <div class="container footer-container">
             <div class="footer-logo">
                 <div class="footer-icon">
-                    <img src="assets/Logo.png" class="footer-sun"></img>
+                    <img src="Logo.png" class="footer-sun"></img>
                 </div>
                 <span class="footer-text">Sol-Ark</span>
             </div>
             
             <div class="footer-copyright">
-                © 2024 Sol-Ark Systems Inc. // ALL RIGHTS RESERVED
+                © 2026 Sol-Ark Systems Inc. // ALL RIGHTS RESERVED
             </div>
 
             <div class="footer-social">
                 <a href="#" class="social-link"><i data-lucide="github" class="social-icon"></i></a>
                 <a href="#" class="social-link"><i data-lucide="twitter" class="social-icon"></i></a>
+                <a href="#" class="social-link"><i data-lucide="instagram" class="social-icon"></i></a>
+                <a href="#" class="social-link"><i data-lucide="facebook" class="social-icon"></i></a>
             </div>
         </div>
     </footer>
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
 </body>
 </html>
