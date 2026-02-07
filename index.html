@@ -31,18 +31,13 @@
 
             <!-- Links -->
             <div class="nav-links">
-                <a href="#" class="nav-link"><span class="link-number">[01]</span> OBSERVATORY</a>
-                <a href="#" class="nav-link"><span class="link-number">[02]</span> FORECAST</a>
-                <a href="#" class="nav-link"><span class="link-number">[03]</span> IMPACT</a>
+                <a href="#observatory" class="nav-link"><span class="link-number">[01]</span> OBSERVATORY</a>
+                <a href="#forecast" class="nav-link"><span class="link-number">[02]</span> FORECAST</a>
+                <a href="#impact" class="nav-link"><span class="link-number">[03]</span> IMPACT</a>
             </div>
 
             <!-- Status -->
             <div class="nav-status">
-                <div class="status-indicator">
-                    <span class="status-ping"></span>
-                    <span class="status-dot"></span>
-                    <span class="status-text">SYSTEM ONLINE</span>
-                </div>
                 <button class="login-button">
                     CONSOLE LOGIN
                 </button>
@@ -94,205 +89,294 @@
         </div>
     </section>
     
-    <!-- Live Forecast Dashboard -->
-    <section class="dashboard">
-        <div class="container">
-            <div class="dashboard-header">
+    <!--Observatory -->
+    <section class="dashboard" id="observatory">
+      <div class="container">
+        <div class="dashboard-header">
+          <div>
+            <h2 class="dashboard-title">OBSERVATORY</h2>
+            <p class="dashboard-subtitle">Real-time Space Data.</p>
+          </div>
+          <div class="dashboard-timers">
+            <span class="timer" id="utc-time">UTC 14:20:44</span>
+          </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+          <div class="left-grid">
+            <!-- Metric 1 -->
+            <div class="metric-card green-border" id="bz-card">
+              <div class="metric-header">
+                <h3 class="metric-title">IMF Bz</h3>
+                <i data-lucide="activity" class="metric-icon"></i>
+              </div>
+              <div class="metric-value-large">0.0</div>
+              <div class="metric-description">
+                Interplanetary Magnetic Field North-South Component.
+              </div>
+            </div>
+
+            <!-- Metric 2 -->
+            <div class="metric-card orange-border" id="density-card">
+              <div class="metric-header">
+                <h3 class="metric-title">Proton Density</h3>
+                <i data-lucide="zap" class="metric-icon"></i>
+              </div>
+              <div class="metric-value-large orange-text">0.0</div>
+              <div class="metric-description">
+                he concentration of ionized particles in the solar wind; high
+                levels indicate incoming CME
+              </div>
+            </div>
+          </div>
+
+          <div class="centre-grid">
+            <!-- Main Visualizer -->
+            <div class="dashboard-main">
+              <div class="visualizer-bg"></div>
+
+              <div id="visualizer-default-view">
+                <div class="visualizer-overlay"></div>
+
+                <div class="video-container">
+                  <video id="central-video" autoplay muted loop playsinline>
+                    <source src="Timeline 1.mov" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              </div>
+
+              <div id="visualizer-details-view" class="hidden">
+                <div class="details-container">
+                  <h3 id="details-title">Detail Analysis</h3>
+                  <div id="details-body"></div>
+                  <p class="click-hint">Click anywhere else to return</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric 3 -->
+            <div class="metric-card gray-border" id="speed-card">
+              <div class="metric-header">
+                <h3 class="metric-title">Speed</h3>
+                <i data-lucide="wind" class="metric-icon"></i>
+              </div>
+              <div class="metric-value-large">
+                0.0 <span class="unit">km/s</span>
+              </div>
+              <div class="metric-description">
+                The velocity of charged particles streaming from the Sun, which
+                compresses the magnetosphere.
+              </div>
+            </div>
+          </div>
+
+          <div class="right-grid">
+            <!-- Metric 4 -->
+            <div class="metric-card green-border" id="bt-card">
+              <div class="metric-header">
+                <h3 class="metric-title">IMF Bt</h3>
+                <i data-lucide="activity" class="metric-icon"></i>
+              </div>
+              <div class="metric-value-large">0.0</div>
+              <div class="metric-description">
+                The overall intensity of the Interplanetary Magnetic Field.
+              </div>
+            </div>
+
+            <!-- Metric 5 -->
+            <div class="metric-card orange-border" id="ey-card">
+              <div class="metric-header">
+                <h3 class="metric-title">Electric Field Ey</h3>
+                <i data-lucide="zap" class="metric-icon"></i>
+              </div>
+              <div class="metric-value-large orange-text">0.0</div>
+              <div class="metric-description">
+                A value derived from velocity and Bz that represents the
+                electric potential.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Forecast Section -->
+    <section class="forecast-section" id="forecast">  
+      <div class="container">
+        <div class="forecast-header">
+          <h2 class="forecast-title">Forecast</h2>
+          <p class="forecast-subtitle">
+            Predictive Analysis & Advanced Metrics.
+          </p>
+        </div>
+        <div class="grid-container">
+          <!-- Graphic -->
+          <div
+            class="chart-container"
+            style="position: relative; height: 450px; width: 100%"
+          >
+            <canvas id="kpForecastChart"></canvas>
+          </div>
+
+          <!-- Content -->
+          <div class="forecast-content">
+            <div class="metric-card gray-border">
+              <div class="metric-header">
+                <h3 class="metric-title" style="font-size: 2rem">Live KP</h3>
+                <i data-lucide="compass" class="metric-icon"></i>
+              </div>
+              <div class="metric-value-large" id="live-kp">0.0</div>
+              <div class="metric-description">
+                Current Kp-index value based on latest solar wind data.
+              </div>
+            </div>
+
+            <div class="kp-description" >
+              <h4>Kp Index</h4>
+              <br>
+
+              <p class="forecast-description">
+                The Kp-index (Planetary K-index) is the primary scale used to
+                characterize the magnitude of geomagnetic storms.
+              </p>
+            </div>
+
+            <ul class="feature-list">
+              <li class="feature-item">
+                <div class="feature-icon">
+                  <i data-lucide="check" class="check-icon"></i>
+                </div>
                 <div>
-                    <h2 class="dashboard-title">Planetary Defense Grid</h2>
-                    <p class="dashboard-subtitle">Real-time magnetosphere telemetry.</p>
+                  <h4 class="feature-title">Drag Coefficient Analysis</h4>
+                  <p class="feature-description">
+                    Real-time atmospheric density calculations.
+                  </p>
                 </div>
-                <div class="dashboard-timers">
-                    <span class="timer">T-MINUS: 00:00:00</span>
-                    <span class="timer">UTC 14:20:44</span>
+              </li>
+              <li class="feature-item">
+                <div class="feature-icon">
+                  <i data-lucide="check" class="check-icon"></i>
                 </div>
-            </div>
-
-            <!-- Dashboard Grid -->
-            <div class="dashboard-grid">
-                <!-- Main Visualizer -->
-                <div class="dashboard-main">
-                    <div class="visualizer-bg"></div>
-                    
-                    <!-- UI Overlay -->
-                    <div class="visualizer-overlay">
-                        <div class="visualizer-metric">
-                            <span class="metric-label">Field Intensity</span>
-                            <span class="metric-value">45.2 nT</span>
-                        </div>
-                        <div class="visualizer-status">
-                            <span class="status-indicator-dot"></span>
-                            <span class="status-text">STABLE</span>
-                        </div>
-                    </div>
-
-                    <!-- Abstract Earth/Shield Visualization -->
-                    <div class="earth-visualization">
-                        <div class="outer-ring">
-                            <div class="inner-ring">
-                                <div class="ring-dot"></div>
-                            </div>
-                            <div class="earth-globe">
-                                <div class="earth-grid"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Solar Wind Lines -->
-                    <div class="solar-wind-line top-line"></div>
-                    <div class="solar-wind-line bottom-line"></div>
+                <div>
+                  <h4 class="feature-title">SEU Prediction</h4>
+                  <p class="feature-description">
+                    Single Event Upset probability mapping for electronics.
+                  </p>
                 </div>
-
-                <!-- Metrics Column -->
-                <div class="dashboard-metrics">
-                    <!-- Metric 1 -->
-                    <div class="metric-card green-border">
-                        <div class="metric-header">
-                            <h3 class="metric-title">Kp Index</h3>
-                            <i data-lucide="activity" class="metric-icon"></i>
-                        </div>
-                        <div class="metric-value-large">2.0</div>
-                        <div class="metric-description">Geomagnetic activity low. No disruption expected.</div>
-                        <div class="metric-bar">
-                            <div class="bar-fill green-fill"></div>
-                        </div>
-                    </div>
-
-                    <!-- Metric 2 -->
-                    <div class="metric-card orange-border">
-                        <div class="metric-header">
-                            <h3 class="metric-title">Proton Flux</h3>
-                            <i data-lucide="zap" class="metric-icon"></i>
-                        </div>
-                        <div class="metric-value-large orange-text">10^1</div>
-                        <div class="metric-description">Elevated particle density detected in Sector 7.</div>
-                        <div class="metric-bar">
-                            <div class="bar-fill orange-fill"></div>
-                        </div>
-                    </div>
-
-                    <!-- Metric 3 -->
-                    <div class="metric-card gray-border">
-                        <div class="metric-header">
-                            <h3 class="metric-title">Solar Wind</h3>
-                            <i data-lucide="wind" class="metric-icon"></i>
-                        </div>
-                        <div class="metric-value-large">345 <span class="unit">km/s</span></div>
-                        <div class="metric-description">Velocity nominal. Ambient background levels.</div>
-                    </div>
-                </div>
-            </div>
+              </li>
+            </ul>
+          </div>
         </div>
+      </div>
     </section>
 
-    <!-- Satellite Impact Section -->
-    <section class="satellite-section">
-        <div class="container grid-container">
-            <!-- Graphic -->
-            <div class="satellite-graphic">
-                <!-- Orbital Rings -->
-                <div class="orbital-ring large-ring"></div>
-                <div class="orbital-ring small-ring"></div>
-                
-                <!-- Central Body -->
-                <div class="central-body">
-                    <i data-lucide="globe" class="globe-icon"></i>
-                </div>
-
-                <!-- Satellites -->
-                <div class="satellite safe-1"></div>
-                <div class="satellite safe-2"></div>
-                
-                <!-- Impacted Satellite -->
-                <div class="satellite impacted">
-                    <span class="satellite-alert">ALERT</span>
-                </div>
-
-                <!-- Connection Lines -->
-                <svg class="connection-lines">
-                    <line x1="50%" y1="50%" x2="80%" y2="30%" class="alert-line"></line>
-                    <line x1="50%" y1="50%" x2="50%" y2="15%" class="safe-line"></line>
-                </svg>
-            </div>
-
-            <!-- Content -->
-            <div class="satellite-content">
-                <div class="alert-badge">
-                    <i data-lucide="alert-triangle" class="alert-icon"></i>
-                    <span class="alert-text">Infrastructure Impact Analysis</span>
-                </div>
-                
-                <h2 class="satellite-title">
-                    Protecting orbital assets from <br>
-                    <span class="highlight">geomagnetic disruption.</span>
-                </h2>
-                
-                <p class="satellite-description">
-                    Solar flares can expand Earth's atmosphere, increasing drag on Low Earth Orbit satellites. Our deterministic models predict trajectory deviations up to 72 hours in advance.
-                </p>
-
-                <ul class="feature-list">
-                    <li class="feature-item">
-                        <div class="feature-icon">
-                            <i data-lucide="check" class="check-icon"></i>
-                        </div>
-                        <div>
-                            <h4 class="feature-title">Drag Coefficient Analysis</h4>
-                            <p class="feature-description">Real-time atmospheric density calculations.</p>
-                        </div>
-                    </li>
-                    <li class="feature-item">
-                        <div class="feature-icon">
-                            <i data-lucide="check" class="check-icon"></i>
-                        </div>
-                        <div>
-                            <h4 class="feature-title">SEU Prediction</h4>
-                            <p class="feature-description">Single Event Upset probability mapping for electronics.</p>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+    <!-- Impact Section -->
+    <section class="impact-section" id="impact">
+      <div class="container">
+        <div class="forecast-header">
+          <h2 class="forecast-title">Impact</h2>
+          <p class="forecast-subtitle">Impact Analysis & Advanced Metrics.</p>
         </div>
-    </section>
-
-    <!-- Features / Importance -->
-    <section class="features-section">
-        <div class="container">
-            <div class="features-grid">
-                <!-- Card 1 -->
-                <div class="feature-card">
-                    <div class="card-icon">
-                        <i data-lucide="shield" class="card-icon-svg"></i>
-                    </div>
-                    <h3 class="card-title">Satellite Safety</h3>
-                    <p class="card-description">
-                        Automated orbital adjustments to prevent collision risks due to atmospheric expansion during Class-X flares.
-                    </p>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="feature-card">
-                    <div class="card-icon">
-                        <i data-lucide="signal" class="card-icon-svg"></i>
-                    </div>
-                    <h3 class="card-title">Comms Reliability</h3>
-                    <p class="card-description">
-                        HF radio blackout warnings for aviation and maritime sectors with sub-second latency distribution.
-                    </p>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="feature-card">
-                    <div class="card-icon">
-                        <i data-lucide="server" class="card-icon-svg"></i>
-                    </div>
-                    <h3 class="card-title">Grid Protection</h3>
-                    <p class="card-description">
-                        GIC (Geomagnetically Induced Current) monitoring to prevent transformer saturation and grid collapse.
-                    </p>
-                </div>
+        <div class="impact-grid">
+          <div class="impact-card terminal-card" id="sat-health">
+            <div class="card-glow"></div>
+            <div class="card-header">
+              <i data-lucide="satellite"></i>
+              <h4>SATELLITE HEALTH MODULE</h4>
             </div>
+            <div class="risk-meter">
+              <div class="meter-label">Orbital Drag Risk</div>
+              <div class="meter-track">
+                <div id="drag-bar" class="meter-fill green"></div>
+              </div>
+            </div>
+            <p class="impact-desc" id="drag-status">
+              Atmospheric density nominal.
+            </p>
+            <div>
+              <ul class="impact-desc-list">
+                <li>
+                  <strong>Thermal Expansion:</strong> High solar wind speed (V)
+                  heats the thermosphere, causing it to expand upward.
+                </li>
+                <li>
+                  <strong>Increased Friction:</strong> Satellites encounter
+                  denser air, leading to "orbital drag" and decay.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="impact-card terminal-card" id="comm-module">
+            <div class="card-glow"></div>
+            <div class="card-header">
+              <i data-lucide="radio"></i>
+              <h4>COMM & GNSS MODULE</h4>
+            </div>
+            <div class="risk-meter">
+              <div class="meter-label">Signal Scintillation</div>
+              <div class="meter-track">
+                <div id="scin-bar" class="meter-fill green"></div>
+              </div>
+            </div>
+            <p class="impact-desc" id="scin-status">GPS signal lock: STABLE.</p>
+            <div>
+              <ul class="impact-desc-list">
+                <li>
+                  <strong>Ionospheric Turbulence:</strong> Storms create density
+                  "bubbles" that refract radio waves.
+                </li>
+                <li>
+                  <strong>Navigation Failure:</strong> Scintillation causes GPS
+                  receivers to lose signal lock or accuracy.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="impact-card terminal-card" id="grid-module">
+            <div class="card-glow"></div>
+            <div class="card-header">
+              <i data-lucide="zap"></i>
+              <h4>POWER GRID & GIC MODULE</h4>
+            </div>
+            <div class="risk-meter">
+              <div class="meter-label">Induced Current Risk</div>
+              <div class="meter-track">
+                <div id="gic-bar" class="meter-fill green"></div>
+              </div>
+            </div>
+            <p class="impact-desc" id="gic-status">
+              GIC levels below threshold.
+            </p>
+            <div>
+              <ul class="impact-desc-list">
+                <li>
+                  <strong>Magnetic Induction:</strong> Fluctuating fields induce
+                  DC currents (GICs) into power lines.
+                </li>
+                <li>
+                  <strong>Transformer Saturation:</strong> GICs can saturate
+                  cores, causing overheating and potential grid collapse.
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
+        <div id="storm-level-container" class="storm-badge-wrapper">
+          <div id="storm-level-badge" class="storm-badge g0">
+            <span class="glitch-text" data-text="STATUS: G0 (QUIET)"
+              >STORM STATUS: -- (----- )</span
+            >
+          </div>
+          <div class="storm-details-panel terminal-card">
+            <h4 id="storm-detail-title">STORM IMPACT ANALYSIS</h4>
+            <ul id="storm-detail-list" class="impact-desc-list"></ul>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Footer -->
