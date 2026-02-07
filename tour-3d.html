@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Ark // Metaverse 3D Tour - Solar Wind Journey</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://unpkg.com/lucide@latest/dist/umd/lucide.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #050607;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* UI Overlay */
+        .tour-ui {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .tour-ui-element {
+            pointer-events: auto;
+        }
+
+        /* Top HUD */
+        .hud-top {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stage-info {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 8px;
+            max-width: 400px;
+        }
+
+        .stage-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        /* Live Data Indicator */
+        .live-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            pointer-events: auto;
+        }
+
+        .live-indicator.connected {
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+
+        .live-indicator.connected .live-dot {
+            background: #22c55e;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        #live-button {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            z-index: 200;
+            background: rgba(249, 115, 22, 0.2);
+            border: 1px solid rgba(249, 115, 22, 0.5);
+            color: #f97316;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
+
+        #live-button:hover {
+            background: rgba(249, 115, 22, 0.3);
+            border-color: #f97316;
+        }
+
+        #live-button.active {
+            background: rgba(249, 115, 22, 0.4);
+            border-color: #f97316;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+        }
+
+        /* Live Metrics Display */
+        .live-metrics-panel {
+            position: absolute;
+            top: 120px;
+            right: 20px;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 250px;
+            display: none;
+            pointer-events: auto;
+        }
+
+        .live-metrics-panel.visible {
+            display: block;
+        }
+
+        .live-metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .live-metric-label {
+            color: #a1a1aa;
+        }
+
+        .live-metric-value {
+            color: #f97316;
+            font-weight: 600;
+        }
+
+        .data-quality-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            margin-left: 8px;
+        }
+
+        .data-quality-badge.high {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .data-quality-badge.degraded {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .data-quality-badge.mock {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+        }
+
+        .stage-description {
+            font-size: 12px;
+            color: #a1a1aa;
+        }
+
+        .tour-logo {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f97316;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 8px;
+            width: 300px;
+        }
+
+        .progress-label {
+            font-size: 12px;
+            color: #a1a1aa;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f97316 0%, #ea580c 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #ffffff;
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Center HUD - Stage Metrics */
+        .center-hud {
+            position: absolute;
+            top: 140px;
+            left: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            pointer-events: auto;
+            width: 350px;
+        }
+
+        .metric-display {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 200px;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #a1a1aa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #f97316;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .metric-unit {
+            font-size: 12px;
+            color: #a1a1aa;
+            margin-left: 5px;
+        }
+
+        /* Bottom HUD - Controls */
+        .hud-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        .narration-box {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-left: 3px solid #f97316;
+            padding: 15px 20px;
+            border-radius: 8px;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .narration-label {
+            font-size: 10px;
+            color: #f97316;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .narration-text {
+            font-size: 13px;
+            color: #ffffff;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .controls-panel {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-button {
+            background: rgba(249, 115, 22, 0.1);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            color: #f97316;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .control-button:hover {
+            background: rgba(249, 115, 22, 0.2);
+            border-color: rgba(249, 115, 22, 0.6);
+        }
+
+        .control-button.active {
+            background: rgba(249, 115, 22, 0.3);
+            border-color: #f97316;
+        }
+
+        .control-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stage-button {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stage-button:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.6);
+        }
+
+        .stage-button.active {
+            background: rgba(16, 185, 129, 0.4);
+            border-color: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Kp Index Indicator */
+        .kp-indicator {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        .kp-scale {
+            display: flex;
+            gap: 3px;
+            margin-top: 8px;
+        }
+
+        .kp-segment {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            transition: background 0.3s ease;
+        }
+
+        .kp-segment.active {
+            background: #f97316;
+        }
+
+        /* Particle Counter */
+        .particle-counter {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        /* Stage info panel (right side) */
+        .stage-panel {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            width: 340px;
+            pointer-events: auto;
+            z-index: 250;
+            background: rgba(0, 0, 0, 0.62);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 3px solid rgba(249, 115, 22, 0.75);
+            border-radius: 10px;
+            padding: 14px 14px 12px 14px;
+        }
+
+        .stage-panel .panel-title {
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #f97316;
+            margin-bottom: 10px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stage-panel .panel-row {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 10px;
+            padding: 6px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .stage-panel .panel-row:first-of-type {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .stage-panel .k {
+            font-size: 10px;
+            color: #a1a1aa;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .stage-panel .v {
+            font-size: 12px;
+            color: #ffffff;
+            line-height: 1.35;
+        }
+
+        .stage-panel .mini-hint {
+            margin-top: 10px;
+            font-size: 10px;
+            color: #a1a1aa;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @media (max-width: 900px) {
+            .stage-panel {
+                display: none;
+            }
+        }
+
+        /* Hover tooltip (object inspection) */
+        .hover-tooltip {
+            position: fixed;
+            left: 0;
+            top: 0;
+            transform: translate(-9999px, -9999px);
+            pointer-events: none;
+            z-index: 400;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid rgba(249, 115, 22, 0.35);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(10px);
+            max-width: 320px;
+            opacity: 0;
+            transition: opacity 0.12s ease;
+        }
+
+        .hover-tooltip.visible {
+            opacity: 1;
+        }
+
+        .hover-tooltip .title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #f97316;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .hover-tooltip .desc {
+            font-size: 12px;
+            color: #ffffff;
+            line-height: 1.35;
+        }
+
+        .hover-tooltip .hint {
+            margin-top: 8px;
+            font-size: 10px;
+            color: #a1a1aa;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Exit button */
+        .exit-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 200;
+        }
+
+        .exit-button:hover {
+            background: rgba(255, 0, 0, 0.2);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .center-hud {
+                grid-template-columns: 1fr;
+                width: 90vw;
+            }
+
+            .hud-bottom {
+                flex-direction: column;
+            }
+
+            .controls-panel {
+                width: 100%;
+            }
+
+            .narration-box {
+                max-width: 100%;
+            }
+        }
+
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050607;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 500;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(249, 115, 22, 0.2);
+            border-top-color: #f97316;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #a1a1aa;
+        }
+
+        /* Animation for notifications */
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        /* Button transition smoothing */
+        .control-button {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .control-button:active {
+            transform: scale(0.96);
+        }
+
+        /* Smooth color transitions */
+        .kp-segment {
+            transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Keyboard hints */
+        .control-button::after {
+            content: attr(data-key);
+            display: none;
+            font-size: 9px;
+            color: #a1a1aa;
+            margin-left: 4px;
+        }
+
+        @media (hover: hover) {
+            .control-button:hover::after {
+                display: inline;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Three.js Canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Initializing Solar Wind Journey...</div>
+    </div>
+
+    <!-- Tour UI Overlay -->
+    <div class="tour-ui" id="tourUI">
+        <!-- Exit Button -->
+        <button class="exit-button tour-ui-element" id="exitButton">EXIT TOUR</button>
+
+        <!-- Stage Info Panel (hoverable / updates per stage) -->
+        <div class="stage-panel tour-ui-element" id="stagePanel">
+            <div class="panel-title">Mission Telemetry</div>
+            <div class="panel-row">
+                <div class="k">Location</div>
+                <div class="v" id="panelLocation">—</div>
+            </div>
+            <div class="panel-row">
+                <div class="k">Phenomenon</div>
+                <div class="v" id="panelPhenomenon">—</div>
+            </div>
+            <div class="panel-row">
+                <div class="k">What to do</div>
+                <div class="v" id="panelAction">Hover objects • Click to focus • Free Cam to explore</div>
+            </div>
+            <div class="panel-row">
+                <div class="k">Visible</div>
+                <div class="v" id="panelVisible">Sun • Earth • Mars • Satellites</div>
+            </div>
+            <div class="mini-hint">Tip: hover the magnetosphere shell when you reach Earth.</div>
+        </div>
+
+        <!-- Top HUD -->
+        <!-- <div class="hud-top">
+            <div class="stage-info tour-ui-element">
+                <div class="tour-logo">☀️ SOL-ARK 3D TOUR</div>
+                <div class="stage-name" id="stageName">Loading...</div>
+                <div class="stage-description" id="stageDescription">Initializing experience...</div>
+            </div>
+
+            <div class="progress-container tour-ui-element">
+                <div class="progress-label">Journey Progress</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-text"><span id="progressPercent">0</span>% Complete</div>
+            </div>
+        </div> -->
+
+        <!-- Center HUD - Metrics -->
+         
+        <div class="center-hud" id="centerHUD">
+            <div class="metric-display tour-ui-element">
+                <span class="metric-label">Kp Index</span>
+                <div class="metric-value"><span id="kpValue">0.0</span><span class="metric-unit">Kp</span></div>
+            </div>
+            <div class="metric-display tour-ui-element">
+                <span class="metric-label">Particles Detected</span>
+                <div class="metric-value"><span id="particleCount">0</span><span class="metric-unit">×10⁴</span></div>
+            </div>
+            <div class="metric-display tour-ui-element">
+                <span class="metric-label">Travel Speed</span>
+                <div class="metric-value"><span id="speedValue">Normal</span><span class="metric-unit"></span></div>
+            </div>
+            <div class="metric-display tour-ui-element">
+                <span class="metric-label">Distance</span>
+                <div class="metric-value"><span id="distanceValue">93M</span><span class="metric-unit">miles</span>
+                </div>
+            </div>
+        </div>
+
+        
+
+
+        <!-- Live Metrics Panel -->
+        <div class="live-metrics-panel tour-ui-element" id="liveMetricsPanel">
+            <div style="font-size: 10px; color: #a1a1aa; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                LIVE METRICS
+                <span class="data-quality-badge" id="dataQualityBadge">mock</span>
+            </div>
+            <div class="live-metric-row">
+                <span class="live-metric-label">Kp Index:</span>
+                <span class="live-metric-value" id="liveKpIndex">--</span>
+            </div>
+            <div class="live-metric-row">
+                <span class="live-metric-label">Solar Wind:</span>
+                <span class="live-metric-value" id="liveSolarWind">--</span>
+            </div>
+            <div class="live-metric-row">
+                <span class="live-metric-label">Particle Flux:</span>
+                <span class="live-metric-value" id="liveParticleFlux">--</span>
+            </div>
+            <div class="live-metric-row">
+                <span class="live-metric-label">Aurora Intensity:</span>
+                <span class="live-metric-value" id="liveAuroraIntensity">--</span>
+            </div>
+            <div class="live-metric-row">
+                <span class="live-metric-label">Satellite Risk:</span>
+                <span class="live-metric-value" id="liveSatelliteRisk">--</span>
+            </div>
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="font-size: 9px; color: #a1a1aa;">
+                    Last Update: <span id="liveLastUpdate">--</span>
+                </div>
+            </div>
+        </div>
+
+<!-- Load JS after HTML elements -->
+<script src="tour-3d.js"></script>
+
+        <!-- Bottom HUD -->
+        <div class="hud-bottom">
+            <div class="narration-box tour-ui-element">
+                <span class="narration-label">🔊 AI Narration</span>
+                <div class="narration-text" id="narrationText">Welcome to the Solar Wind Journey...</div>
+            </div>
+
+            <div class="controls-panel tour-ui-element">
+                <button class="control-button active" id="speedNormal" data-speed="normal"
+                    title="Press 1 for Normal speed">● Normal</button>
+                <button class="control-button" id="speedFast" data-speed="fast" title="Press 2 for 3x speed">⚡ 3x
+                    Speed</button>
+                <button class="control-button" id="showParticles" data-toggle="particles"
+                    title="Press P to toggle particles">☄ Particles</button>
+                <button class="control-button" id="showKpMeter" data-toggle="kp" title="Press K to toggle Kp meter">📊
+                    Kp Meter</button>
+                <button class="control-button" id="toggleNarration" data-toggle="narration"
+                    title="Press N to toggle narration">🔊 Narration</button>
+                <button class="control-button" id="toggleFreeCam" data-toggle="freecam" title="Press F for Free Cam">🕹
+                    Free Cam</button>
+                <button class="control-button" id="toggleAutoPlay" data-toggle="autoplay"
+                    title="Press A to toggle auto-play">▶ Auto Play</button>
+            </div>
+
+            <!-- Stage Navigation -->
+            <div class="stage-selector tour-ui-element"
+                style="background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 15px; border-radius: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 11px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.5px;">Jump to
+                    Stage:</span>
+                <button class="stage-button" data-stage="0" title="Stage 1">① Sun</button>
+                <button class="stage-button" data-stage="1" title="Stage 2">② CME</button>
+                <button class="stage-button" data-stage="2" title="Stage 3">③ Space</button>
+                <button class="stage-button" data-stage="3" title="Stage 4">④ Earth</button>
+                <button class="stage-button" data-stage="4" title="Stage 5">⑤ Aurora</button>
+                <button class="stage-button" data-stage="5" title="Stage 6">⑥ Satellites</button>
+                <button class="stage-button" data-stage="6" title="Stage 7">⑦ Impact</button>
+            </div>
+
+            <div class="kp-indicator tour-ui-element">
+                <div style="font-size: 10px; color: #a1a1aa;">KP GEOMAGNETIC SCALE</div>
+                <div class="kp-scale" id="kpScale">
+                    <div class="kp-segment" style="background: rgba(34, 197, 94, 0.3);" title="0-1"></div>
+                    <div class="kp-segment" style="background: rgba(34, 197, 94, 0.3);" title="1-2"></div>
+                    <div class="kp-segment" style="background: rgba(34, 197, 94, 0.3);" title="2-3"></div>
+                    <div class="kp-segment" style="background: rgba(251, 191, 36, 0.3);" title="3-4"></div>
+                    <div class="kp-segment" style="background: rgba(251, 191, 36, 0.3);" title="4-5"></div>
+                    <div class="kp-segment" style="background: rgba(239, 68, 68, 0.3);" title="5-6"></div>
+                    <div class="kp-segment" style="background: rgba(239, 68, 68, 0.3);" title="6-7"></div>
+                    <div class="kp-segment" style="background: rgba(220, 38, 38, 0.3);" title="7-8"></div>
+                    <div class="kp-segment" style="background: rgba(220, 38, 38, 0.3);" title="8-9"></div>
+                </div>
+            </div>
+
+            <div class="particle-counter tour-ui-element">
+                <div style="font-size: 10px; color: #a1a1aa;">PARTICLE STREAM</div>
+                <div style="font-size: 16px; font-weight: 600; margin-top: 5px; color: #f97316;"
+                    id="particleStreamCount">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hover tooltip for interactive inspection -->
+    <div class="hover-tooltip" id="hoverTooltip">
+        <div class="title" id="hoverTitle">OBJECT</div>
+        <div class="desc" id="hoverDesc">Hover over planets, satellites, and space objects.</div>
+        <div class="hint">Click to focus • Toggle “Free Cam” to explore</div>
+    </div>
+    <!-- Keyboard Controls Help (hidden by default, can be toggled with '?' key) -->
+    <div id="helpPanel"
+        style="display: none; position: fixed; bottom: 20px; left: 20px; background: rgba(0, 0, 0, 0.85); border: 1px solid rgba(249, 115, 22, 0.3); padding: 16px; border-radius: 8px; max-width: 300px; z-index: 350; color: #ffffff; font-size: 12px; font-family: 'JetBrains Mono', monospace; max-height: 70vh; overflow-y: auto;">
+        <div
+            style="color: #f97316; margin-bottom: 12px; font-weight: 600; border-bottom: 1px solid rgba(249, 115, 22, 0.3); padding-bottom: 8px;">
+            KEYBOARD CONTROLS</div>
+        <div style="line-height: 1.8;">
+            <div><span style="color: #f97316;">1 / 2</span> - Speed Normal / 3x</div>
+            <div><span style="color: #f97316;">P</span> - Toggle Particles</div>
+            <div><span style="color: #f97316;">K</span> - Toggle Kp Meter</div>
+            <div><span style="color: #f97316;">N</span> - Toggle Narration</div>
+            <div><span style="color: #f97316;">F</span> - Toggle Free Cam</div>
+            <div><span style="color: #f97316;">→ / Space</span> - Next Stage</div>
+            <div><span style="color: #f97316;">← </span> - Previous Stage</div>
+            <div><span style="color: #f97316;">+ / -</span> - Zoom Camera</div>
+            <div><span style="color: #f97316;">🖱️ Scroll</span> - Zoom In/Out</div>
+            <div><span style="color: #f97316;">ESC / Q</span> - Exit Tour</div>
+            <div><span style="color: #f97316;">?</span> - Toggle Help</div>
+        </div>
+    </div>
+    <!-- Three.js Library (match the main site version for compatibility) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+
+    <!-- Controls (user camera control) -->
+    <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Post-processing (cinematic bloom) -->
+    <script src="https://unpkg.com/three@0.160.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://unpkg.com/three@0.160.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://unpkg.com/three@0.160.0/examples/js/postprocessing/MaskPass.js"></script>
+    <script src="https://unpkg.com/three@0.160.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://unpkg.com/three@0.160.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://unpkg.com/three@0.160.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+    <!-- Startup verification -->
+    <script>
+        console.log('📦 Checking THREE.js library...');
+        if (typeof THREE === 'undefined') {
+            console.error('❌ THREE.js library failed to load from CDN');
+            document.body.innerHTML = '<div style="color: white; padding: 20px; font-family: monospace; background: #050607;">' +
+                '<h2>⚠️ Library Loading Error</h2>' +
+                '<p>THREE.js library failed to load. This may be a network issue.</p>' +
+                '<p>Please:</p>' +
+                '<ul><li>Check your internet connection</li><li>Refresh the page</li><li>Try again in a few moments</li></ul>' +
+                '</div>';
+        } else {
+            console.log('✓ THREE.js r' + THREE.REVISION + ' loaded successfully');
+        }
+    </script>
+
+    <!-- Narration System (AI Voice Audio) -->
+    <script src="narration-system.js"></script>
+
+    <!-- Tour Script -->
+    <script src="tour-3d.js"></script>
+    <script src="fade-effect.js"></script>
+</body>
+
+</html>

@@ -271,3 +271,301 @@ function initRingShader() {
 
 // Call the function when the page loads
 document.addEventListener('DOMContentLoaded', initRingShader);
+
+
+const API_URL = "https://sol-ark.onrender.com/forecast-kp";
+let maxkp = 0;
+
+async function updateDashboardMetrics() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        //Update UTC time
+        const utc = document.getElementById('utc-time');
+        if (utc) {
+            utc.innerText = `UTC ${new Date().toISOString().substr(11, 8)}`;
+        }
+
+        // 1. Update bz (Metric 1)
+        const bzCard = document.querySelector('#bz-card');
+        if (bzCard) {
+            // Update the large number
+            bzCard.querySelector('.metric-value-large').innerText = data.observatory.bz.toFixed(2);
+        }
+
+        // 2. Update Density (Metric 2)
+        const densityCard = document.querySelector('#density-card');
+        if (densityCard) {
+            // Update the large number
+            densityCard.querySelector('.metric-value-large').innerText = data.observatory.density.toFixed(2);
+        }
+
+        // 3. Update Speed (Metric 3)
+        const speedCard = document.querySelector('#speed-card');
+        if (speedCard) {
+            // Update the large number
+            speedCard.querySelector('.metric-value-large').innerText = data.observatory.speed.toFixed(2);
+        }
+
+        // 4. Update bt (Metric 4)
+        const btCard = document.querySelector('#bt-card');
+        if (btCard) {
+            // Update the large number
+            btCard.querySelector('.metric-value-large').innerText = data.observatory.bt.toFixed(2);
+        }
+
+        // 5. Update ey (Metric 5)
+        const eyCard = document.querySelector('#ey-card');
+        if (eyCard) {
+            // Update the large number
+            eyCard.querySelector('.metric-value-large').innerText = data.observatory.ey.toFixed(2);
+        }
+
+        // Update the Kp Forecast Chart
+        const forecastArray = data.forecast.hourly_kp;
+        maxkp = Math.max(...forecastArray);
+        if (data.forecast && data.forecast.hourly_kp) {
+            renderKpChart(data.forecast.hourly_kp, data.avg_6h);
+        }
+
+        //Update live KP value
+        const liveKpElement = document.getElementById('live-kp');
+        if (liveKpElement) {
+            liveKpElement.innerText = data.forecast.live_kp.toFixed(2);
+        }
+
+        // Update Impact Grid Cards
+        const bz = data.observatory.bz;
+        const speed = data.observatory.speed;
+        const kp = data.forecast.live_kp;
+
+        // 1. Orbital Drag (Based on Speed)
+        const dragPct = Math.min(((speed - 300) / 500) * 100, 100);
+        updateImpactModule('drag-bar', 'drag-status', dragPct, "High Drag: Orbit decay possible.");
+
+        // 2. Scintillation (Based on Kp and Bz)
+        let scinPct = (kp / 9) * 100;
+        if (bz < 0) scinPct += (Math.abs(bz) / 20) * 50; 
+        updateImpactModule('scin-bar', 'scin-status', Math.min(scinPct, 100), "Signal Jitter: GNSS lock weak.");
+
+        // 3. Power Grid (Based on Kp)
+        const gicPct = (kp / 9) * 100;
+        updateImpactModule('gic-bar', 'gic-status', gicPct, "GIC Detected: Transformer saturation risk.");
+
+        //Storm Level Badge Update
+        const stormInfo = getStormLevel(maxkp); // Use the peak from your 6h forecast
+        const badge = document.getElementById('storm-level-badge');
+        if (badge) {
+            badge.className = `storm-badge ${stormInfo.class}`;
+            badge.querySelector('span').innerText = `STORM STATUS: ${stormInfo.label}`;
+        }
+
+        // Update Storm Details Panel
+        const currentStorm = getStormLevel(maxkp); // Use your existing helper
+        const detailTitle = document.getElementById('storm-detail-title');
+        const detailList = document.getElementById('storm-detail-list');
+
+        if (detailTitle && detailList) {
+            const data = stormLevelData[currentStorm.class];
+            detailTitle.innerText = data.title;
+            detailTitle.style.color = getComputedStyle(document.querySelector(`.storm-badge.${currentStorm.class}`)).color;
+
+            // Inject the bullet points
+            detailList.innerHTML = data.points.map(point => `<li>${point}</li>`).join('');
+        }
+
+    } catch (error) {
+        console.error("Failed to fetch live telemetry:", error);
+    }
+}
+
+// Data Object for Metric Details
+const observatoryDetails = {
+    'IMF Bz': {
+        title: "IMF Bz (North-South Component)",
+        body: "Bz represents the north-south direction of the Interplanetary Magnetic Field (IMF). When Bz turns southward (negative value), it connects with Earth's northward-pointing magnetic field, opening a 'rift' that allows solar wind particles to enter our magnetosphere and trigger auroras or storms."
+    },
+    'Proton Density': {
+        title: "Proton Density (Np)",
+        body: "Proton density measures the concentration of ionized particles (protons) in the solar wind. High density often indicates the arrival of a Coronal Mass Ejection (CME), which can increase satellite drag and cause electronics failures due to ionizing radiation."
+    },
+    'Speed': {
+        title: "Solar Wind Speed (V)",
+        body: "Solar wind speed is the velocity of charged particles streaming from the Sun, typically averaging 400 km/s. Rapid increases (over 500-800 km/s) compress Earth's magnetosphere, potentially inducing currents that disrupt power grids and communication systems."
+    },
+    'IMF Bt': {
+        title: "IMF Bt (Total Field Strength)",
+        body: "Bt represents the total strength of the Interplanetary Magnetic Field. A high Bt value indicates a stronger overall magnetic field in the solar wind, which can amplify the intensity of geomagnetic disturbances if the field orientation turns southward."
+    },
+    'Electric Field Ey': {
+        title: "Solar Wind Electric Field (Ey)",
+        body: "The solar wind electric field (Ey) is a derived value calculated from the solar wind velocity (V) and the IMF Bz component. It represents the dawn-to-dusk electric potential; a stronger Ey enhances the cross-polar cap potential, driving intense geomagnetic activity."
+    }
+};
+
+// Define the Storm Level Data
+const stormLevelData = {
+    "g0": {
+        title: "G0 — QUIET (KP < 5)",
+        points: [
+            "Satellite operations remain fully stable",
+            "GPS, GNSS, and timing signals are accurate",
+            "No radio or communication disruptions",
+            "Normal satellite drag and orbit conditions"
+        ]
+    },
+    "g1": {
+        title: "G1 — MINOR (KP ≥ 5)",
+        points: [
+            "Minor signal fluctuations in high-latitude radio communication",
+            "Slight increase in satellite drag (negligible impact)",
+            "GPS accuracy may show brief, localized deviations",
+            "Low-risk conditions for satellite electronics"
+        ]
+    },
+    "g2": {
+        title: "G2 — MODERATE (KP ≥ 6)",
+        points: [
+            "Intermittent HF radio communication disruptions",
+            "GPS positioning errors increase in polar regions",
+            "Low Earth Orbit satellites experience noticeable drag changes",
+            "Minor satellite orientation and sensor disturbances"
+        ]
+    },
+    "g3": {
+        title: "G3 — STRONG (KP ≥ 7)",
+        points: [
+            "Widespread HF radio blackouts at high latitudes",
+            "GPS navigation accuracy significantly degraded",
+            "Increased risk of satellite attitude control issues",
+            "Communication satellites may require corrective adjustments"
+        ]
+    },
+    "g4": {
+        title: "G4 — SEVERE (KP ≥ 8)",
+        points: [
+            "Satellite communication outages possible",
+            "GNSS systems become unreliable across wide regions",
+            "Increased radiation exposure to satellite electronics",
+            "Satellite operators may initiate safe-mode procedures"
+        ]
+    },
+    "g5": {
+        title: "G5 — EXTREME (KP ≥ 9)",
+        points: [
+            "Long-duration satellite communication failures possible",
+            "Severe GPS and navigation system disruptions",
+            "Permanent damage risk to satellite electronics",
+            "Loss of satellite control in extreme cases"
+        ]
+    }
+};
+
+// Interaction Logic for dashboard metrics
+document.addEventListener('DOMContentLoaded', function() {
+    const defaultView = document.getElementById('visualizer-default-view');
+    const detailsView = document.getElementById('visualizer-details-view');
+    const detailsTitle = document.getElementById('details-title');
+    const detailsBody = document.getElementById('details-body');
+
+    // Handle Metric Card Clicks
+    document.querySelectorAll('.metric-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.stopPropagation(); // Stop click from immediately closing the view
+            
+            const cardTitle = this.querySelector('.metric-title').textContent.trim();
+            const details = observatoryDetails[cardTitle];
+
+            if (details) {
+                // Update text content
+                detailsTitle.textContent = details.title;
+                detailsBody.innerHTML = `<p>${details.body}</p>`;
+
+                // Toggle visibility: Hide animation, show details
+                defaultView.classList.add('hidden');
+                detailsView.classList.remove('hidden');
+            }
+        });
+    });
+
+    // Handle "Click Outside" to Close
+    document.addEventListener('click', function(e) {
+        // If the click is NOT inside a metric card, return to default view
+        if (!e.target.closest('.metric-card')) {
+            detailsView.classList.add('hidden');
+            defaultView.classList.remove('hidden');
+        }
+    });
+});
+
+// KP chart logic
+let kpChart = null; // Store chart instance to destroy/recreate on click
+
+function renderKpChart(hourlyData, avgValue) {
+    const ctx = document.getElementById('kpForecastChart').getContext('2d');
+    
+    // Labels for T to T+6 hours
+    const labels = ['Live', 'T+1h', 'T+2h', 'T+3h', 'T+4h', 'T+5h', 'T+6h'];
+
+    // Destroy old chart if it exists to prevent overlap
+    if (kpChart) { kpChart.destroy(); }
+
+    kpChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Predicted Kp Index',
+                data: hourlyData,
+                backgroundColor: 'rgba(249, 115, 22, 0.6)', // Solar Orange
+                borderColor: '#f97316',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, max: (maxkp + 0.2), grid: { color: 'rgba(255,255,255,0.1)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+}
+
+// function to handle impact bar fill and status update
+function updateImpactModule(barId, statusId, value, warningText) {
+    const bar = document.getElementById(barId);
+    const status = document.getElementById(statusId);
+    // const value = 41; // For testing purposes
+    bar.style.width = `${value}%`;
+    
+    // Set colors and text based on severity
+    if (value > 70) {
+        bar.className = 'meter-fill red';
+        status.innerText = warningText;
+        status.style.color = '#fca5a5';
+    } else if (value > 40) {
+        bar.className = 'meter-fill yellow';
+        status.innerText = "Elevated activity. Monitor levels.";
+        status.style.color = '#fde047';
+    } else {
+        bar.className = 'meter-fill green';
+        status.innerText = "Nominal operations.";
+        status.style.color = '#71717a';
+    }
+}
+
+// Function to map Kp to NOAA G-Scale
+function getStormLevel(kp) {
+    if (kp >= 9) return { level: "G5", label: "G5 (EXTREME)", class: "g5" };
+    if (kp >= 8) return { level: "G4", label: "G4 (SEVERE)", class: "g4" };
+    if (kp >= 7) return { level: "G3", label: "G3 (STRONG)", class: "g3" };
+    if (kp >= 6) return { level: "G2", label: "G2 (MODERATE)", class: "g2" };
+    if (kp >= 5) return { level: "G1", label: "G1 (MINOR)", class: "g1" };
+    return { level: "G0", label: "G0 (QUIET)", class: "g0" };
+}
+
+// Call it once when the page loads
+document.addEventListener('DOMContentLoaded', updateDashboardMetrics);

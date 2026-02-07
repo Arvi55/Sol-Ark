@@ -1,0 +1,541 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* =========================
+   BODY STYLING
+========================= */
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; /* horizontally center the card */
+    align-items: center;     /* vertically center the card */
+    background-color: #000;
+    background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+    color: white;
+    padding: 20px;
+}
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* =========================
+   CARD STYLING
+========================= */
+.card {
+    display: flex;
+    flex-direction: column;  /* vertical stack */
+    justify-content: flex-start; /* start from top */
+    align-items: flex-start;     /* left align content */
+    width: 90%;
+    max-width: 900px;
+    padding: 60px 40px;
+    border-radius: 40px;
+    border: 3px solid rgb(234, 88, 12);
+    background: #0b0b0b;
+    box-shadow:
+        0 0 25px rgba(234, 88, 12, 0.6),
+        0 0 80px rgba(234, 88, 12, 0.2);
+}
+
+/* =========================
+   TOPBAR / LOGO
+========================= */
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.logo-sun {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+}
+
+.brand-text {
+    font-family: 'Orbitron', sans-serif;
+    color: white;
+    font-size: 22px;
+    letter-spacing: 3px;
+    font-weight: 600;
+}
+
+/* =========================
+   HERO TEXT
+========================= */
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+/* =========================
+   HERO TEXT UPDATED
+========================= */
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 5px; /* Spacing kam ki taaki subtitle upar aaye */
+}
+
+.subtitle {
+    font-size: 2.2rem; /* Size bada kar diya */
+    color: rgb(234, 88, 12); /* Perfect Orange color */
+    font-weight: 600;
+    text-align: left;
+    margin-bottom: 25px;
+    letter-spacing: -0.5px; /* Thoda professional look ke liye */
+    line-height: 1.2;
+}
+/* --- VERTICAL ZIG-ZAG WORKFLOW --- */
+.workflow-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 80px auto;
+    padding: 20px 0;
+}
+
+/* Vertical Center Line */
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: rgba(234, 88, 12, 0.1);
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.line-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgb(234, 88, 12), transparent);
+    box-shadow: 0 0 15px rgb(234, 88, 12);
+}
+
+/* Step Wrapper */
+.workflow-step {
+    position: relative;
+    width: 50%;
+    padding: 30px 60px;
+    box-sizing: border-box;
+    z-index: 2;
+    opacity: 0; /* JS handle */
+    transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.workflow-step.left { left: 0; text-align: right; transform: translateX(-50px); }
+.workflow-step.right { left: 50%; text-align: left; transform: translateX(50px); }
+
+.workflow-step.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Numbered Circular Node */
+.step-node {
+    position: absolute;
+    top: 50%;
+    width: 45px;
+    height: 45px;
+    background: #0b0b0b;
+    border: 2px solid rgb(234, 88, 12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    color: #fff;
+    font-size: 0.9rem;
+    box-shadow: 0 0 15px rgba(234, 88, 12, 0.4);
+    z-index: 5;
+    transform: translateY(-50%);
+    animation: pulseGlow 2.5s infinite;
+}
+
+.left .step-node { right: -22.5px; }
+.right .step-node { left: -22.5px; }
+
+/* Card Styling */
+.step-card {
+    background: rgba(15, 15, 15, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(234, 88, 12, 0.2);
+    padding: 25px;
+    border-radius: 25px;
+    transition: 0.4s;
+    position: relative;
+    overflow: hidden;
+}
+
+.step-card i {
+    font-size: 2rem;
+    color: rgb(234, 88, 12);
+    margin-bottom: 15px;
+}
+
+.step-card h3 {
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.step-card p {
+    color: #aaa;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.tech-tag {
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 0.65rem;
+    color: rgb(234, 88, 12);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(234, 88, 12, 0.1);
+    padding: 4px 10px;
+    border-radius: 5px;
+}
+
+/* Hover Effects */
+.step-card:hover {
+    border-color: #fff;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(234, 88, 12, 0.2);
+}
+
+/* Animations */
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0px rgba(234, 88, 12, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(234, 88, 12, 0); }
+    100% { box-shadow: 0 0 0 0px rgba(234, 88, 12, 0); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 800px) {
+    .timeline-line { left: 30px; }
+    .workflow-step { width: 100%; padding: 20px 20px 20px 70px; text-align: left !important; }
+    .workflow-step.right { left: 0; }
+    .step-node { left: 8px !important; width: 40px; height: 40px; }
+    .workflow-step.left, .workflow-step.right { transform: translateX(20px); }
+}
+/* --- CENTERED WORKFLOW WRAPPER --- */
+.workflow-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Horizontally center the whole roadmap */
+    padding: 60px 0;
+}
+
+.workflow-container {
+    position: relative;
+    width: 100%;
+    max-width: 850px; /* Limits width to stay clean inside the orange box */
+    margin: 0 auto;
+}
+
+/* Timeline Line */
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: rgba(234, 88, 12, 0.1);
+    transform: translateX(-50%);
+}
+
+.line-progress {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgb(234, 88, 12), transparent);
+    box-shadow: 0 0 15px rgb(234, 88, 12);
+}
+
+/* Steps Zig-Zag */
+.workflow-step {
+    position: relative;
+    width: 50%;
+    padding: 20px 50px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: 0.8s ease-out;
+}
+
+.workflow-step.left { left: 0; text-align: right; transform: translateX(-40px); }
+.workflow-step.right { left: 50%; text-align: left; transform: translateX(40px); }
+
+.workflow-step.show { opacity: 1; transform: translateX(0); }
+
+/* Circular Nodes */
+.step-node {
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    background: #000;
+    border: 2px solid rgb(234, 88, 12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: 'Orbitron';
+    font-size: 0.8rem;
+    z-index: 10;
+    transform: translateY(-50%);
+    box-shadow: 0 0 10px rgba(234, 88, 12, 0.5);
+}
+
+.left .step-node { right: -20px; }
+.right .step-node { left: -20px; }
+
+/* --- CARD WITH MOVING PARTICLES --- */
+.step-card {
+    position: relative;
+    background: rgba(15, 15, 15, 0.9);
+    border: 1px solid rgba(234, 88, 12, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    overflow: hidden; /* Important for particles */
+    z-index: 1;
+}
+
+/* Particle Background Animation */
+.card-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background-image: 
+        radial-gradient(circle, rgba(234, 88, 12, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px, 60px 60px;
+    z-index: -1;
+    opacity: 0.5;
+    animation: moveParticles 20s linear infinite;
+}
+
+@keyframes moveParticles {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-50px, -50px); }
+}
+
+.step-card i { font-size: 2rem; color: rgb(234, 88, 12); margin-bottom: 15px; }
+.step-card h3 { color: #fff; font-family: 'Orbitron'; margin-bottom: 8px; }
+.step-card p { color: #888; font-size: 0.8rem; line-height: 1.5; }
+
+/* AI Specific Pulse */
+.ai-active .step-card {
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 20px rgba(234, 88, 12, 0.2);
+}
+
+/* Mobile Fix */
+@media (max-width: 768px) {
+    .timeline-line { left: 20px; }
+    .workflow-step { width: 100%; left: 0 !important; padding-left: 50px; text-align: left !important; }
+    .step-node { left: 0 !important; }
+}
+/* --- 1. HEADER & TEXT LEFT ALIGN (Inside Orange Card) --- */
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Logo aur Title left mein rahenge */
+    width: 90%;
+    max-width: 1000px;
+}
+
+h1, .subtitle, .description {
+    text-align: left;
+    width: 100%;
+}
+
+/* --- 2. ROADMAP CENTERED SECTION --- */
+.workflow {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Poore roadmap ko card ke beech mein layega */
+    margin-top: 50px;
+}
+
+.workflow-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 850px; /* Isse roadmap orange box ke bahar nahi jayega */
+    margin: 0 auto;
+}
+
+/* Central Line */
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: rgba(234, 88, 12, 0.2);
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.line-progress {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgb(234, 88, 12), transparent);
+    box-shadow: 0 0 15px rgb(234, 88, 12);
+}
+
+/* Zig-Zag Steps */
+.workflow-step {
+    position: relative;
+    width: 50%;
+    padding: 20px 40px;
+    box-sizing: border-box;
+    z-index: 2;
+    opacity: 0;
+    transition: 0.8s ease;
+}
+
+.workflow-step.left { 
+    left: 0; 
+    text-align: right; 
+    transform: translateX(-30px); 
+}
+
+.workflow-step.right { 
+    left: 50%; 
+    text-align: left; 
+    transform: translateX(30px); 
+}
+
+.workflow-step.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Nodes & Cards */
+.step-node {
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    background: #000;
+    border: 2px solid rgb(234, 88, 12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: 'Orbitron';
+    font-size: 0.8rem;
+    transform: translateY(-50%);
+    z-index: 5;
+}
+
+.left .step-node { right: -20px; }
+.right .step-node { left: -20px; }
+
+.step-card {
+    position: relative;
+    background: rgba(15, 15, 15, 0.95);
+    border: 1px solid rgba(234, 88, 12, 0.2);
+    border-radius: 20px;
+    padding: 25px;
+    overflow: hidden; /* For particles */
+}
+
+/* Particles Animation */
+.card-particles {
+    position: absolute;
+    top: 0; left: 0;
+    width: 200%; height: 200%;
+    background-image: radial-gradient(circle, rgba(234, 88, 12, 0.1) 1px, transparent 1px);
+    background-size: 30px 30px;
+    animation: moveParticles 20s linear infinite;
+    z-index: 0;
+}
+
+@keyframes moveParticles {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-50px, -50px); }
+}
+
+.step-card * { position: relative; z-index: 1; }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .timeline-line { left: 20px; }
+    .workflow-step { width: 100%; left: 0 !important; padding-left: 50px !important; text-align: left !important; }
+    .step-node { left: 0 !important; }
+}
+.line-progress {
+    height: 0; /* Initial height zero */
+    transition: height 0.5s ease; /* Scroll ke sath badhegi */
+    background: linear-gradient(to bottom, #ea580c, #ffedd5);
+    box-shadow: 0 0 20px #ea580c;
+}
+/* aboutstyle.css ke end mein add karein */
+
+/* Card hover par icon rotate aur glow hoga */
+.step-card:hover i {
+    transform: rotate(15deg) scale(1.2);
+    color: #fff; /* Icon white ho jayega glow ke sath */
+    transition: 0.3s ease;
+}
+
+/* Node (number circle) hover par fill ho jayega */
+.workflow-step:hover .step-node {
+    background: rgb(234, 88, 12);
+    color: #fff;
+    box-shadow: 0 0 25px rgb(234, 88, 12);
+    transform: translateY(-50%) scale(1.1);
+    transition: 0.3s ease;
+}
+
+/* Card ka border glow */
+.step-card:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 40px rgba(234, 88, 12, 0.2);
+}
+.workflow {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    /* Grid Background */
+    background-image: 
+        linear-gradient(rgba(234, 88, 12, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(234, 88, 12, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+}
